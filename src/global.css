@@ -1,0 +1,46 @@
+/* Apply a global font */
+body {
+    font-family: 'Roboto', sans-serif;
+  }
+  
+  /* Style the navigation */
+  nav {
+    background-color: #333;
+    color: white;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  nav a {
+    color: white;
+    margin: 0 10px;
+    text-decoration: none;
+  }
+  
+  /* Style forms and inputs */
+  input, button {
+    padding: 8px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #45a049;
+  }
+  
+  /* Add responsiveness */
+  @media (max-width: 600px) {
+    nav a {
+      display: block;
+      margin: 10px 0;
+    }
+  }
+  
