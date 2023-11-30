@@ -28,7 +28,7 @@
   </template>
   
   <script>
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import axios from 'axios';
 import { computed, ref, onMounted } from 'vue';

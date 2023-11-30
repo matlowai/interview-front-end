@@ -16,7 +16,8 @@ export default {
         // Construct the URL for Azure AD login
         const tenantId = '059fb2ad-7eca-495b-8b94-3440d83f2a67';
         const clientId = '8016037c-54cf-4836-a33f-dfcbc9b47d90';
-        const redirectUri = encodeURIComponent('https://ashy-rock-000761b1e.4.azurestaticapps.net/login');
+        //const redirectUri = encodeURIComponent('https://ashy-rock-000761b1e.4.azurestaticapps.net/login');
+        const redirectUri = encodeURIComponent('http://localhost:8080/login');
         const scope = encodeURIComponent('openid profile email');
         const responseType = 'code';
 
