@@ -1,4 +1,5 @@
 <template>
+  <div v-if="notification.show" class="notification" :class="{ 'error': notification.isError }">{{ notification.message }}</div>
     <div v-if="policyholder">
       <h2>Edit Policyholder</h2>
       <form @submit.prevent="handleSubmit">
@@ -27,28 +28,38 @@
   </template>
   
   <script>
-import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useStore } from 'vuex';
 import axios from 'axios';
+import { computed, ref, onMounted } from 'vue';
 
 export default {
   setup() {
     const store = useStore();
+    const router = useRouter();
     const route = useRoute();
     const policyholderId = route.params.id;
+    const policyholder = ref(null);
 
-    const defaultPolicyholder = {
-      name: '',
-      age: 0,
-      policy_start_date: new Date().toISOString().substring(0, 10),
-      policy_amount: 0
+    const fetchPolicyholder = async () => {
+      if (!store.getters.isAuthenticated) {
+        router.push('/login');
+        return;
+      }
+      if (!store.state.policyholders.some(p => p.id === policyholderId)) {
+        try {
+          const response = await axios.get(`http://localhost:8001/policyholders/${policyholderId}`);
+          policyholder.value = response.data.policyholder;
+        } catch (error) {
+          console.error('Error fetching policyholder:', error);
+        }
+      } else {
+        policyholder.value = store.state.policyholders.find(p => p.id === policyholderId);
+      }
     };
 
-    const policyholder = computed({
-      get: () => store.state.policyholders.find(p => p.id === policyholderId) || defaultPolicyholder,
-      set: value => store.commit('UPDATE_POLICYHOLDER', value)
-    });
+    onMounted(fetchPolicyholder);
+
 
     const policyAmountModel = computed({
       get: () => (policyholder.value.policy_amount || 0).toFixed(2),
@@ -57,18 +68,30 @@ export default {
       }
     });
 
+    const notification = ref({
+      show: false,
+      message: '',
+      isError: false
+    });
+
+    const showNotification = (message, isError = false) => {
+      notification.value = { show: true, message, isError };
+      setTimeout(() => notification.value.show = false, 3000);  // Hide after 3 seconds
+    };
+
     const handleSubmit = async () => {
+      if (!store.getters.isAuthenticated) {
+        router.push('/login');
+        return;
+      }
       try {
         const updatedData = { ...policyholder.value, policy_amount: parseFloat(policyAmountModel.value) };
         const response = await axios.put(`http://localhost:8001/policyholders/${policyholderId}`, updatedData);
         if (response.status === 200) {
           store.commit('UPDATE_POLICYHOLDER', response.data.policyholder);
-          alert('Policyholder updated successfully');
-          console.log('Store state immediately after update:', store.state);
-          setTimeout(() => {
-            console.log('Store state 2 seconds after update:', store.state);
-          }, 2000);
+          showNotification('Policyholder updated successfully');
         } else {
+          showNotification('Error updating policyholder', true);
           console.error('Error updating policyholder:', response.data);
         }
       } catch (error) {
@@ -76,9 +99,27 @@ export default {
       }
     };
 
-    return { policyholder, handleSubmit, policyAmountModel };
+    return { policyholder, handleSubmit, policyAmountModel, notification  };
   }
 };
 </script>
 
-  
+<style>
+.notification {
+  position: fixed;
+  top: 50px; /* Adjust this value based on your nav bar's height */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: lightyellow;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+  width: 100%;
+  text-align: center;
+  z-index: 1000;
+}
+
+.notification.error {
+  background-color: pink;
+}
+
+</style>

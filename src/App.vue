@@ -4,7 +4,8 @@
     <router-link to="/new">Add Policyholder</router-link> |
     <router-link to="/claims">View Claim Notes</router-link> |
     <router-link to="/claims/new">Upload Claim Note</router-link> |
-    <router-link to="/claims/gen">Generate Claim Notes</router-link>
+    <router-link to="/claims/gen">Generate Claim Notes</router-link> |
+    <router-link to="/analysis">Analysis</router-link>
   </nav>
   <router-view/>
 </template>

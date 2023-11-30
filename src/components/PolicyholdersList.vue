@@ -1,70 +1,140 @@
 <template>
   <div class="policyholders-container">
-    <h2>Policyholders List</h2>
-    <ul v-if="policyholders && policyholders.length" class="policyholders-list">
-      <li v-for="policyholder in policyholders" :key="policyholder.id" class="policyholder-item">
-        <span class="policyholder-name">{{ policyholder.name }}</span> -
-        Age: <span class="policyholder-age">{{ policyholder.age }}</span>,
-        Start Date: <span class="policyholder-date">{{ policyholder.policy_start_date }}</span>,
-        Amount: <span class="policyholder-amount">{{ policyholder.policy_amount }}</span>
+    <header class="policyholders-header">
+      <h2>Policyholders</h2>
+    </header>
+    <div class="search-container">
+      <input type="radio" id="all" value="all" v-model="searchMode" @change="fetchPolicyholders">
+      <label for="all">All Policyholders</label>
+      <input type="radio" id="search" value="search" v-model="searchMode">
+      <label for="search">Search</label>
+      <input 
+        v-if="searchMode === 'search'" 
+        v-model="searchQuery" 
+        placeholder="Enter name to search">
+      <button v-if="searchMode === 'search'" @click="searchPolicyholders">Search</button>
+    </div>
+
+    <table v-if="policyholders && policyholders.length" class="policyholders-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Age</th>
+          <th>Start Date</th>
+          <th>Amount</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="policyholder in policyholders" :key="policyholder.id">
+          <td>{{ policyholder.name }}</td>
+          <td>{{ policyholder.age }}</td>
+          <td>{{ policyholder.policy_start_date }}</td>
+          <td>{{ policyholder.policy_amount | currencyFormat }}</td>
+          <td>
         <!-- Edit Link -->
         <router-link :to="`/edit/${policyholder.id}`" class="action-button">Edit</router-link>
         <!-- Add Claim Button -->
         <router-link :to="`/claims/manage/${policyholder.id}`" class="action-button">Add Claim</router-link>
         <!-- View Claims Button -->
-        <router-link :to="`/claims/view/${policyholder.id}`" class="action-button">View Claims</router-link>
-      </li>
-    </ul>
+        <router-link 
+          :to="`/claims/view/${policyholder.id}`" 
+          class="action-button" 
+          :class="{ 'inactive': !hasClaims[policyholder.id] }"
+          v-if="hasClaims[policyholder.id]">View Claims</router-link>
+        </td>
+        </tr>
+      </tbody>
+    </table>
     <p v-else class="no-policyholders">No policyholders found.</p>
   </div>
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapState } from 'vuex';
 
 export default {
   computed: {
-    ...mapState(['policyholders'])
+    ...mapState(['policyholders', 'claims']),
+    hasClaims() {
+      let claimStatus = {};
+      this.policyholders.forEach(policyholder => {
+        claimStatus[policyholder.id] = this.claims.some(claim => claim.policyholder_id === policyholder.id);
+      });
+      return claimStatus;
+    }
+  },
+  data() {
+    return {
+      searchMode: 'search', // Default to 'search' mode
+      searchQuery: ''       // Holds the search query
+    };
   },
   methods: {
-    ...mapActions(['fetchPolicyholders'])
+    fetchPolicyholders() {
+      if (this.searchMode === 'all') {
+        this.$store.dispatch('fetchPolicyholders');
+        this.$store.dispatch('fetchClaims');
+      }
+    },
+    searchPolicyholders() {
+      if (this.searchQuery.trim()) {
+        // Dispatch the search action and wait for it to complete
+        this.$store.dispatch('searchPolicyholders', this.searchQuery)
+          .then(() => {
+            // After the policyholders have been fetched and set, fetch the claims
+            const policyholderIds = this.policyholders.map(ph => ph.id);
+            return this.$store.dispatch('fetchClaimsForPolicyholder', policyholderIds);
+          })
+          .catch(error => {
+            console.error('Error in search process:', error);
+          });
+      } else {
+        this.fetchPolicyholders();
+      }
+    }
   },
   mounted() {
-    this.fetchPolicyholders();
   }
 };
 </script>
 
+
 <style>
 .policyholders-container {
-  max-width: 800px;
+  max-width: 2800px;
   margin: 0 auto;
   padding: 20px;
   font-family: 'Arial', sans-serif;
 }
 
-.policyholders-list {
-  list-style: none;
-  padding: 0;
+.policyholders-header {
+  text-align: center;
+  margin-bottom: 20px;
 }
 
-.policyholder-item {
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  padding: 10px;
-  margin-bottom: 10px;
-  border-radius: 4px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.policyholders-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
 }
 
-.policyholder-name {
-  font-weight: bold;
+.policyholders-table thead {
+  background-color: #4CAF50;
+  color: white;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
-.policyholder-age, .policyholder-date, .policyholder-amount {
-  font-style: italic;
+.policyholders-table th, .policyholders-table td {
+  text-align: left;
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+}
+
+.policyholders-table tr:hover {
+  background-color: #f5f5f5;
 }
 
 .action-button {
@@ -84,4 +154,10 @@ export default {
 .no-policyholders {
   text-align: center;
 }
+
+.action-button.inactive {
+  opacity: 0.5;
+  pointer-events: none; /* Disables clicking */
+}
+
 </style>

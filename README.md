@@ -1,6 +1,7 @@
 # vue-policy
 
 ## Project setup
+Make sure to delete package-lock.json if switching between nw and non nw
 ```
 npm install
 ```

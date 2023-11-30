@@ -1,46 +1,74 @@
-/* Apply a global font */
 body {
-    font-family: 'Roboto', sans-serif;
-  }
-  
-  /* Style the navigation */
-  nav {
-    background-color: #333;
-    color: white;
-    padding: 10px;
-    text-align: center;
-  }
-  
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; /* Ensures padding does not affect overall width */
+}
+
+/* Style the navigation */
+nav {
+  background-color: #333;
+  color: white;
+  padding: 10px;
+  text-align: center;
+}
+
+nav a {
+  color: white;
+  margin: 0 10px;
+  text-decoration: none;
+}
+
+/* Style forms and inputs */
+input, button {
+  padding: 8px;
+  margin: 5px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+/* Add responsiveness */
+@media (max-width: 600px) {
   nav a {
-    color: white;
-    margin: 0 10px;
-    text-decoration: none;
-  }
-  
-  /* Style forms and inputs */
-  input, button {
-    padding: 8px;
-    margin: 5px 0;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  
-  button {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    cursor: pointer;
-  }
-  
-  button:hover {
-    background-color: #45a049;
-  }
-  
-  /* Add responsiveness */
-  @media (max-width: 600px) {
-    nav a {
       display: block;
       margin: 10px 0;
-    }
   }
-  
+}
+
+/* Container styles for full width */
+.container {
+  width: 100%;
+  max-width: 2200px; /* Adjust max width as needed */
+  margin: 0 auto; /* Center the container */
+  padding: 0 15px; /* Add some padding on smaller screens */
+}
+
+/* Ensure that analysis-container and other main containers use the .container class */
+.analysis-container, .claims-container {
+  /* Add any specific styles for these containers here */
+}
+
+/* Add a general responsive grid if needed */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -15px; /* Adjust margins and paddings based on your design */
+}
+
+.column {
+  flex: 1;
+  padding: 0 15px;
+}
+
+/* You can add more responsive styles as needed */
