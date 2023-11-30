@@ -1,8 +1,8 @@
 import { createStore } from 'vuex';
 import axios from 'axios';
 
-//const apiUrl = 'http://localhost:8001';
-const apiUrl = 'http://matlowaiassignmentfastapiapp-dns-name.westus2.azurecontainer.io:8001';
+const apiUrl = 'http://localhost:8001';
+//const apiUrl = 'http://matlowaiassignmentfastapiapp-dns-name.westus2.azurecontainer.io:8001';
 
 
 export default createStore({
@@ -84,7 +84,8 @@ export default createStore({
   actions: {
     async login({ commit }, authCode) {
       try {
-        const response = await axios.post('http://matlowaiassignmentfastapiapp-dns-name.westus2.azurecontainer.io:8001/exchange-code', { code: authCode });
+        //const response = await axios.post('http://matlowaiassignmentfastapiapp-dns-name.westus2.azurecontainer.io:8001/exchange-code', { code: authCode });
+        const response = await axios.post('http://localhost:8001/exchange-code', { code: authCode });
         const expiresIn = 3600; // 1 hours in seconds
         commit('SET_TOKEN', { token: response.data.token, expiresIn });
       } catch (error) {
