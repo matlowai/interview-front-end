@@ -48,7 +48,7 @@ export default {
       }
       if (!store.state.policyholders.some(p => p.id === policyholderId)) {
         try {
-          const response = await axios.get(`http://localhost:8001/policyholders/${policyholderId}`);
+          const response = await axios.get(`http://matlowaiassignmentfastapiapp-dns-name.westus2.azurecontainer.io:8001/policyholders/${policyholderId}`);
           policyholder.value = response.data.policyholder;
         } catch (error) {
           console.error('Error fetching policyholder:', error);
@@ -86,7 +86,7 @@ export default {
       }
       try {
         const updatedData = { ...policyholder.value, policy_amount: parseFloat(policyAmountModel.value) };
-        const response = await axios.put(`http://localhost:8001/policyholders/${policyholderId}`, updatedData);
+        const response = await axios.put(`http://matlowaiassignmentfastapiapp-dns-name.westus2.azurecontainer.io:8001/policyholders/${policyholderId}`, updatedData);
         if (response.status === 200) {
           store.commit('UPDATE_POLICYHOLDER', response.data.policyholder);
           showNotification('Policyholder updated successfully');
